@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<!--
+    Udacity Neighborhood Map Project
+       by Philip Bremner
+       02/27/2018
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="style.css" rel="stylesheet" />
+  </head>
+<body>
+     <div class="left_container">
+        <div class="options-box">
+            <h1>Neighborhood Map</h1>
+            <div>
+                <p>Select one or more entries to filter on.</p>
+                <select multiple="multiple" height="5" data-bind="options:filterLoc, selectedOptions:selectedLocs"> </select>
+                <div>
+                    <button data-bind="click: filterLocations, enable: selectedLocs().length > 0">Filter</button>
+                    <button data-bind="click: clearFilter, enable: selectedLocs().length > 0">Clear</button>
+                </div>                                                                                                                                
+             </div>
+
+            <div class="container">
+                <h2>Choose a location:</h2>
+                <ul data-bind="foreach: locationsList">
+                    <li data-bind="text: title, click: $parent.populateFSInfoWindow"></li>
+                </ul>
+                <img class="foursquare" src="img/foursquare_attr.png" srcset="img/foursquare_attr@2x.png" alt="Powered By Foursquare!">
+            </div>
+                                               
+        </div>
+        <div id="map">
+       </div>
+    </div>
+    <script type='text/javascript' src='js/knockout-3.4.0.js'></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script type='text/javascript' src="js/main.js"></script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDRGCPEA7MVhnkAe28uA199Wsvqgonb28&v=3&callback=startApp"
+            onerror="googleError()">
+    </script>
+</body>
+</html>
