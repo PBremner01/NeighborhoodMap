@@ -130,7 +130,7 @@ var ViewModel = function () {
 
     function toggleBounce(id) {
         var lv_id;
-        if (typeof (this) === "undefined") {
+        if (typeof (this.id) === "undefined") {
             lv_id = marker.id;
         }
         else {
