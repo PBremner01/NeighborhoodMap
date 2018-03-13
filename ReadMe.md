@@ -16,3 +16,4 @@ To run:
 Notes: 
 1. Responsive web design is supported map functionality resizing and recentering support.
 2. Animations is supported with a DROP when a marker is placed and a BOUNCE when a marker is clicked on.
+3. To access the Project files directly from github : https://github.com/PBremner01/NeighborhoodMap.git
