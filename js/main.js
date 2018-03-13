@@ -1,12 +1,19 @@
-﻿/* jshint -W100 */
-/*jshint esversion: 6 */ 
+﻿//***********************************************************************************************************
+//   Udacity Neighborhood Map project
+//     by Philip Bremner
+//     02/27/2018
+//***********************************************************************************************************
+
+// These are the locations that will be shown to the user.
+/*jshint esversion: 6 */
+"use strict";
 var locations = [
   { id: 0, title: "Park Ave Penthouse", location: { lat: 40.7713024, lng: -73.9632393 }, marker },
   { id: 1, title: "Chelsea Loft", location: { lat: 40.7444883, lng: -73.9949465 }, marker },
   { id: 2, title: "Union Square Open Floor Plan", location: { lat: 40.7347062, lng: -73.9895759 }, marker },
   { id: 3, title: "East Village Hip Studio", location: { lat: 40.7281777, lng: -73.984377 }, marker },
-  { id: 4, title: "TriBeCa Artsy Bachelor Pad", location: { lat: 40.7195264, lng: -74.0089934 }, marker },
-  { id: 5, title: "Chinatown Homey Space", location: { lat: 40.7180628, lng: -73.9961237 }, marker }
+  { id: 4, title: "The Museum of Modern Art", location: { lat: 40.7614367, lng: -73.9798103 }, marker },
+  { id: 5, title: "Broadway Theatre", location: { lat: 40.7632245, lng: -73.98275 }, marker }
 ];
 
 // Global variables
@@ -15,16 +22,15 @@ var map, FSClientID, FSClientSecret;
 var markers = [];
 
 var Loc = function (data) {
-    this.title = ko.observable(data.title);
-    this.location = ko.observable(data.location);
-    this.id = ko.observable(data.id).valueOf();
+    this.title = data.title;
+    this.location = data.location;
+    this.id = data.id;
 };
+
 
 // Knockout MVVM functionality
 var ViewModel = function () {
     var self = this;
-    self.title = ko.observable('');
-    self.id = ko.observable('');
 
     //Load the filter domain list
     self.filterLoc = ko.observableArray([]);
@@ -46,22 +52,36 @@ var ViewModel = function () {
         self.id();
     };
 
+    this.populateFSInfoWindow = function (item) {
+
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setAnimation(null);
+        }
+
+        var lv_id = item.id.valueOf();
+        //currentLoc = lv_id();
+        currentLoc = lv_id;
+        ShowInfoWindow();
+        toggleBounce();
+    };
+
     this.filterLocations = function () {
-        var lv_index = this.locationsList().length - 1;
+
+        var lv_index = locations.length - 1.
         var lv_found = 0;
 
-        this.hideListings();
+        hideListings();
         this.locationsList.removeAll();
         locations.forEach(function (locItem) {
             self.locationsList.push(new Loc(locItem));
         });
 
         //Need to adjust the deletion index for decrementing 
-        for (i = lv_index; i >= 0; i--) {
+        for (var i = lv_index; i >= 0; i--) {
             var ls_location = this.locationsList()[i];
             lv_found = 0;
-            for (j = 0; j < this.selectedLocs().length; j++) {
-                if (ls_location.title() == this.selectedLocs()[j]) {
+            for (var j = 0; j < this.selectedLocs().length; j++) {
+                if (ls_location.title == this.selectedLocs()[j]) {
                     lv_found = 1;
                     break;
                 }
@@ -72,22 +92,23 @@ var ViewModel = function () {
             }
         }
 
-        this.showListings();
+        showListings();
 
     };
 
     this.clearFilter = function () {
         this.selectedLocs([]);
         this.locationsList.removeAll();
-        for (i = 0; i < locations.length; i++) {
+        for (var i = 0; i < locations.length; i++) {
             locations[i].marker = markers[i];
             this.locationsList.push(new Loc(locations[i]));
         }
-        this.showListings();
+        showListings();
     };
+};
 
     // This function will loop through the markers array and display them all.
-    this.showListings = function () {
+    function showListings() {
         var bounds = new google.maps.LatLngBounds();
         for (var i = 0; i < locations.length; i++) {
             if (locations[i].marker !== null) {
@@ -98,47 +119,43 @@ var ViewModel = function () {
         map.fitBounds(bounds);
     };
 
-    this.hideListings = function () {
+    function hideListings() {
         for (var i = 0; i < markers.length; i++) {
             locations[i].marker = markers[i];
             markers[i].setMap(null);
         }
     };
 
-    // Initiates the Foursquares InfoWindow from clicking on the location listing
-    this.populateFSInfoWindow = function (item) {
-        var lv_id = item.id.valueOf();
-        currentLoc = lv_id();
-        self.ShowInfoWindow();
-    };
+    function toggleBounce(id) {
+        var lv_id;
+        if (typeof (this) == "undefined") {
+            lv_id = marker.id;
+        }
+        else {
+            lv_id = this.id;
+        }
 
+        //var lv_id = currentLoc;
+        marker = markers[lv_id];
 
-    this.toggleBounce = function () {
-
-        marker = markers[this.id];
-        for (i = 0; i < markers.length; i++) {
+        for (var i = 0; i < markers.length; i++) {
             markers[i].setAnimation(null);
         }
 
-        //if (marker.getAnimation() != null) {
-        //    marker.setAnimation(null);
-        //} else {
         marker.setAnimation(google.maps.Animation.BOUNCE);
-        //}
     };
 
     // Show the Foursquares InfoWindow
-    this.ShowInfoWindow = function () {
-
-        if (typeof this.id == "undefined") {
-            return;
-        }
-
+    function ShowInfoWindow() {
+        var lv_id;
+        
         if (currentLoc === "") {
-            currentLoc = this.id;
+            lv_id = marker.id;     //Retrieved from the Google Maps section marker click
+        }
+        else {
+            lv_id = currentLoc;    //Retrieved from the Item List View click
         }
 
-        var lv_id = currentLoc;
         currentLoc = "";
 
         marker = markers[lv_id];
@@ -163,13 +180,14 @@ var ViewModel = function () {
                     self.city = response.location.formattedAddress[1];
                     self.zip = response.location.formattedAddress[3];
                     self.country = response.location.formattedAddress[4];
-                    self.htmlContent = 'Foursquare Info';
+                    self.htmlContent = 'Foursquare Info:  ' + '<p class="iw_address">' + response.name + '</p>';
                     self.htmlContentFoursquare =
                     '<h6 class="iw_address_title"> Address: </h6>' +
                     '<p class="iw_address">' + self.street + '</p>' +
-                    '<p class="iw_address">' + self.city + '</p>' +
-                    '<p class="iw_address">' + self.zip + '</p>' +
-                    '<p class="iw_address">' + self.country +
+                    '<p class="iw_address">' + self.city + '</p>';
+                    if (self.zip != null) {
+                        + '<p class="iw_address">' + self.zip + '</p>'
+                    }
                     '</p>' + '</div>' + '</div>';
 
                     infowindow.setContent(self.htmlContent + self.htmlContentFoursquare);
@@ -185,7 +203,7 @@ var ViewModel = function () {
                 );
             });
 
-            this.htmlContent = '<div>' + '<h4 class="iw_title">' + marker.title +
+            self.htmlContent = '<div>' + '<h4 class="iw_title">' + marker.title +
                 '</h4>';
 
             infowindow.open(map, marker);
@@ -197,9 +215,8 @@ var ViewModel = function () {
 
     };
 
-
     // Google map initialization
-    this.initMap = function () {
+    function initMap() {
         // Constructor creates a new map - only center and zoom are required.
         map = new google.maps.Map(document.getElementById('map'), {
             center: { lat: 40.7413549, lng: -73.9980244 },
@@ -240,17 +257,18 @@ var ViewModel = function () {
             map.setCenter(center);
         });
 
-
-        this.showListings();
+        showListings();
 
     };
 
+    function googleError() {
 
-
-    this.initMap();
-
-};
+        alert("Warning:  Google Maps error occurred.");
+    }
 
 function startApp() {
     ko.applyBindings(new ViewModel());
+    initMap();
 }
+
+
