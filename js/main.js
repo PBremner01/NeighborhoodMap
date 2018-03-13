@@ -1,4 +1,4 @@
-﻿//***********************************************************************************************************
+//***********************************************************************************************************
 //   Udacity Neighborhood Map project
 //     by Philip Bremner
 //     02/27/2018
@@ -6,7 +6,9 @@
 
 // These are the locations that will be shown to the user.
 /*jshint esversion: 6 */
-"use strict";
+
+"use strict()";
+
 var locations = [
   { id: 0, title: "Park Ave Penthouse", location: { lat: 40.7713024, lng: -73.9632393 }, marker },
   { id: 1, title: "Chelsea Loft", location: { lat: 40.7444883, lng: -73.9949465 }, marker },
@@ -67,7 +69,7 @@ var ViewModel = function () {
 
     this.filterLocations = function () {
 
-        var lv_index = locations.length - 1.
+        var lv_index = locations.length - 1;
         var lv_found = 0;
 
         hideListings();
@@ -117,18 +119,18 @@ var ViewModel = function () {
             }
         }
         map.fitBounds(bounds);
-    };
+    }
 
     function hideListings() {
         for (var i = 0; i < markers.length; i++) {
             locations[i].marker = markers[i];
             markers[i].setMap(null);
         }
-    };
+    }
 
     function toggleBounce(id) {
         var lv_id;
-        if (typeof (this) == "undefined") {
+        if (typeof (this) === "undefined") {
             lv_id = marker.id;
         }
         else {
@@ -143,7 +145,7 @@ var ViewModel = function () {
         }
 
         marker.setAnimation(google.maps.Animation.BOUNCE);
-    };
+    }
 
     // Show the Foursquares InfoWindow
     function ShowInfoWindow() {
@@ -185,10 +187,6 @@ var ViewModel = function () {
                     '<h6 class="iw_address_title"> Address: </h6>' +
                     '<p class="iw_address">' + self.street + '</p>' +
                     '<p class="iw_address">' + self.city + '</p>';
-                    if (self.zip != null) {
-                        + '<p class="iw_address">' + self.zip + '</p>'
-                    }
-                    '</p>' + '</div>' + '</div>';
 
                     infowindow.setContent(self.htmlContent + self.htmlContentFoursquare);
                 } else {
@@ -213,7 +211,7 @@ var ViewModel = function () {
             });
         }
 
-    };
+    }
 
     // Google map initialization
     function initMap() {
@@ -259,7 +257,7 @@ var ViewModel = function () {
 
         showListings();
 
-    };
+    }
 
     function googleError() {
 
